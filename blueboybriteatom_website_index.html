@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Machawira Bright - Electronics Engineer & Developer from Zimbabwe">
+  <meta name="keywords" content="briteAtom, Zimbabwe developer, WhatsApp bot, automation, electronics engineer">
+  <title>Machawira Bright — Official Website</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+</head>
+<body class="bg-gray-900 text-white font-sans font-poppins scroll-smooth">
+  <!-- HEADER -->
+  <header class="bg-gray-800 p-4 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold flex items-center">
+        <i class="fas fa-atom text-green-400 mr-2"></i>briteAtom
+      </h1>
+      <nav class="hidden md:block">
+        <a href="#about" class="px-3 hover:text-green-400 transition">About</a>
+        <a href="#skills" class="px-3 hover:text-green-400 transition">Skills</a>
+        <a href="#projects" class="px-3 hover:text-green-400 transition">Projects</a>
+        <a href="#store" class="px-3 hover:text-green-400 transition">Store</a>
+        <a href="#contact" class="px-3 hover:text-green-400 transition">Contact</a>
+      </nav>
+      <button id="mobile-menu-button" class="md:hidden text-xl">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-gray-800 px-4 py-2">
+      <a href="#about" class="block py-2 hover:text-green-400">About</a>
+      <a href="#skills" class="block py-2 hover:text-green-400">Skills</a>
+      <a href="#projects" class="block py-2 hover:text-green-400">Projects</a>
+      <a href="#store" class="block py-2 hover:text-green-400">Store</a>
+      <a href="#contact" class="block py-2 hover:text-green-400">Contact</a>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="text-center py-20 bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-10 left-10 w-20 h-20 rounded-full bg-white animate-pulse"></div>
+      <div class="absolute top-1/4 right-20 w-32 h-32 rounded-full bg-white animate-pulse"></div>
+      <div class="absolute bottom-20 left-1/3 w-24 h-24 rounded-full bg-white animate-pulse"></div>
+      <div class="absolute bottom-1/3 right-40 w-16 h-16 rounded-full bg-white animate-pulse"></div>
+    </div>
+    
+    <div class="container mx-auto relative z-10">
+      <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-full w-32 h-32 mx-auto mb-6 overflow-hidden border-4 border-white">
+        <img src="https://photos.google.com/share/AF1QipM8RaetOMZRLjAb0tyMklFGGTFV2mreWc3HfgRbpSWmIeshDSeRsUYjQLep1xkVvA?key=SlFGbFI2QWYyVFU0a0NLX1JxbGZvUk1fVkJHSmRB">
+      </div>
+      <h2 class="text-4xl md:text-5xl font-extrabold mb-4 animate-fade-in">Hi, I'm <span class="text-green-400">Machawira Bright</span> 👨🏽‍💻</h2>
+      <p class="text-lg max-w-2xl mx-auto mb-8 animate-fade-in">Also known as <strong class="text-green-400">briteAtom</strong> — a rising electronics engineer, automation wizard, and creative coder from Zimbabwe. I build bots, websites, business systems, and anything that turns dreams into tools.</p>
+      <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up">
+        <a href="#projects" class="bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 flex items-center justify-center">
+          <i class="fas fa-code mr-2"></i>See My Projects
+        </a>
+        <a href="#contact" class="bg-transparent border-2 border-green-500 hover:bg-green-500 text-white py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 flex items-center justify-center">
+          <i class="fas fa-envelope mr-2"></i>Contact Me
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about" class="py-16 px-6 max-w-4xl mx-auto text-center">
+    <h3 class="text-3xl font-bold mb-12 relative inline-block">
+      <span class="relative z-10">About Me</span>
+      <span class="absolute bottom-0 left-0 w-full h-2 bg-green-500 z-0"></span>
+    </h3>
+  
+    <div id="aboutSlider" class="text-white text-lg min-h-[200px] rounded-2xl p-8 bg-gray-800 bg-opacity-60 backdrop-blur-md border border-gray-700 shadow-xl relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-indigo-900 to-purple-900 opacity-20"></div>
+      <p class="slide relative z-10">I'm a 20-year-old future tech mogul from Zimbabwe who codes for fun and passion. I dream of building tools that change how people live, work, and communicate — from bots to websites to business platforms.</p>
+      <p class="slide relative z-10">I'm all about making tech accessible, automating the mundane, and creating solutions that empower people. Whether it's a WhatsApp bot that manages groups or a platform for reselling WiFi data, I'm here to innovate.</p>
+      <p class="slide relative z-10">When I'm not coding, I'm either learning something new, dreaming up my next big project, or just enjoying life in beautiful Zimbabwe.</p>
+      <p class="slide relative z-10">I'm Machawira Bright, also known as briteAtom — a young electronics engineering student, self-taught developer, and automation enthusiast based in Zimbabwe.</p>
+      <p class="slide relative z-10">I use my free time to explore programming, read the Bible, and dream of innovations that empower communities. My goal? To use technology not just for show — but to solve real problems, inspire others, and grow into one of Africa's future digital leaders.</p>
+    </div>
+  
+    <div id="dots" class="flex justify-center space-x-3 mt-6">
+      <span class="dot w-3 h-3 rounded-full bg-white opacity-50 cursor-pointer"></span>
+      <span class="dot w-3 h-3 rounded-full bg-white opacity-50 cursor-pointer"></span>
+      <span class="dot w-3 h-3 rounded-full bg-white opacity-50 cursor-pointer"></span>
+      <span class="dot w-3 h-3 rounded-full bg-white opacity-50 cursor-pointer"></span>
+      <span class="dot w-3 h-3 rounded-full bg-white opacity-50 cursor-pointer"></span>
+    </div>
+  
+    <div class="mt-8 flex justify-center space-x-4">
+      <button id="prevBtn" class="px-5 py-2 bg-gray-700 hover:bg-gray-900 rounded-xl text-white transition flex items-center">
+        <i class="fas fa-arrow-left mr-2"></i>Back
+      </button>
+      <button id="nextBtn" class="px-5 py-2 bg-gray-700 hover:bg-gray-900 rounded-xl text-white transition flex items-center">
+        Next<i class="fas fa-arrow-right ml-2"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- SKILLS SECTION -->
+  <section id="skills" class="py-16 bg-gray-800">
+    <div class="container mx-auto px-6">
+      <h3 class="text-3xl font-bold mb-12 text-center">My Skills</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+        <div class="bg-gray-700 p-5 rounded-xl shadow-lg text-center hover:bg-gray-600 transition transform hover:scale-105">
+          <div class="text-4xl text-green-400 mb-3">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2">Electronics</h4>
+          <p class="text-gray-300 text-sm">Circuit design, PCB layout, embedded systems</p>
+        </div>
+        
+        <div class="bg-gray-700 p-5 rounded-xl shadow-lg text-center hover:bg-gray-600 transition transform hover:scale-105">
+          <div class="text-4xl text-green-400 mb-3">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2">Automation</h4>
+          <p class="text-gray-300 text-sm">Bots, scripts, workflow automation</p>
+        </div>
+        
+        <div class="bg-gray-700 p-5 rounded-xl shadow-lg text-center hover:bg-gray-600 transition transform hover:scale-105">
+          <div class="text-4xl text-green-400 mb-3">
+            <i class="fas fa-code"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2">Web Dev</h4>
+          <p class="text-gray-300 text-sm">HTML, CSS, JavaScript, responsive design</p>
+        </div>
+        
+        <div class="bg-gray-700 p-5 rounded-xl shadow-lg text-center hover:bg-gray-600 transition transform hover:scale-105">
+          <div class="text-4xl text-green-400 mb-3">
+            <i class="fas fa-wifi"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2">Networking</h4>
+          <p class="text-gray-300 text-sm">WiFi systems, data management, security</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS SECTION -->
+  <section id="projects" class="py-16 px-6">
+    <div class="max-w-4xl mx-auto">
+      <h3 class="text-3xl font-bold mb-12 text-center">My Projects</h3>
+      <div class="grid gap-8">
+        <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transition transform hover:scale-[1.02]">
+          <div class="md:flex">
+            <div class="md:w-2/5 bg-gray-700 flex items-center justify-center p-6">
+              <div class="text-6xl text-green-400">
+                <i class="fab fa-whatsapp"></i>
+              </div>
+            </div>
+            <div class="md:w-3/5 p-6">
+              <h4 class="text-xl font-semibold mb-3">WhatsApp Automation Bot</h4>
+              <p class="text-gray-300 mb-4">Smart local bot that handles groups, auto-replies, deletes unwanted links & more with advanced AI capabilities.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-gray-700 px-3 py-1 rounded-full text-sm">Node.js</span>
+                <span class="bg-gray-700 px-3 py-1 rounded-full text-sm">WhatsApp API</span>
+                <span class="bg-gray-700 px-3 py-1 rounded-full text-sm">Automation</span>
+              </div>
+              <a href="#" class="text-green-400 hover:text-green-300 inline-flex items-center">
+                Learn More <i class="fas fa-arrow-right ml-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transition transform hover:scale-[1.02]">
+          <div class="md:flex">
+            <div class="md:w-2/5 bg-gray-700 flex items-center justify-center p-6">
+              <div class="text-6xl text-green-400">
+                <i class="fas fa-wifi"></i>
+              </div>
+            </div>
+            <div class="md:w-3/5 p-6">
+              <h4 class="text-xl font-semibold mb-3">WiFi Reseller Platform</h4>
+              <p class="text-gray-300 mb-4">A complete system to resell data easily while tracking clients, payments, and usage analytics with real-time reporting.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-gray-700 px-3 py-1 rounded-full text-sm">Web Platform</span>
+                <span class="bg-gray-700 px-3 py-1 rounded-full text-sm">Payment Integration</span>
+                <span class="bg-gray-700 px-3 py-1 rounded-full text-sm">Data Analytics</span>
+              </div>
+              <a href="#" class="text-green-400 hover:text-green-300 inline-flex items-center">
+                Coming Soon <i class="fas fa-clock ml-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORE SECTION -->
+  <section id="store" class="py-16 bg-gradient-to-r from-gray-800 to-gray-900">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h3 class="text-3xl font-bold mb-4">My Digital Store</h3>
+      <p class="text-gray-400 mb-10 max-w-2xl mx-auto">Coming soon: Purchase data bundles, automation tools, custom scripts, and tech templates directly from me.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 transform transition hover:-translate-y-2">
+          <div class="text-4xl text-green-400 mb-4">
+            <i class="fas fa-database"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2">Data Bundles</h4>
+          <p class="text-gray-400 text-sm mb-4">Affordable WiFi and mobile data packages</p>
+          <div class="text-2xl font-bold text-green-400">Coming Soon</div>
+        </div>
+        
+        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 transform transition hover:-translate-y-2">
+          <div class="text-4xl text-green-400 mb-4">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2">Automation Tools</h4>
+          <p class="text-gray-400 text-sm mb-4">Custom scripts and bots for your business</p>
+          <div class="text-2xl font-bold text-green-400">Coming Soon</div>
+        </div>
+        
+        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 transform transition hover:-translate-y-2">
+          <div class="text-4xl text-green-400 mb-4">
+            <i class="fas fa-code"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2">Tech Templates</h4>
+          <p class="text-gray-400 text-sm mb-4">Website templates and UI components</p>
+          <div class="text-2xl font-bold text-green-400">Coming Soon</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section id="contact" class="py-16 px-6 bg-gray-900">
+    <div class="max-w-4xl mx-auto">
+      <h3 class="text-3xl font-bold mb-12 text-center">Get In Touch</h3>
+      
+      <div class="grid md:grid-cols-2 gap-10">
+        <div>
+          <h4 class="text-xl font-semibold mb-6 text-green-400">Contact Information</h4>
+          <div class="space-y-5">
+            <div class="flex items-start">
+              <div class="text-green-400 text-xl mr-4 mt-1">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div>
+                <h5 class="font-semibold">Email</h5>
+                <a href="mailto:brightmachawira1@gmail.com" class="text-gray-400 hover:text-green-400 transition block">brightmachawira1@gmail.com</a>
+                <a href="mailto:briteatom@gmail.com" class="text-gray-400 hover:text-green-400 transition block">briteatom@gmail.com</a>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="text-green-400 text-xl mr-4 mt-1">
+                <i class="fas fa-phone"></i>
+              </div>
+              <div>
+                <h5 class="font-semibold">Phone</h5>
+                <a href="tel:+263776683769" class="text-gray-400 hover:text-green-400 transition block">+263 776 683 769</a>
+                <a href="tel:+263782040755" class="text-gray-400 hover:text-green-400 transition block">+263 782 040 755</a>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="text-green-400 text-xl mr-4 mt-1">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div>
+                <h5 class="font-semibold">Location</h5>
+                <p class="text-gray-400">Zimbabwe</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-10">
+            <h4 class="text-xl font-semibold mb-4 text-green-400">Follow Me</h4>
+            <div class="flex flex-wrap gap-3">
+              <a href="https://github.com/Embeebrite" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-green-400 hover:bg-green-400 hover:text-gray-900 transition">
+                <i class="fab fa-github"></i>
+              </a>
+                <a href="https://twitter.com/briteAtom" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-green-400 hover:bg-green-400 hover:text-gray-900 transition">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="https://www.facebook.com/briteAtom" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-green-400 hover:bg-green-400 hover:text-gray-900 transition">
+                <i class="fab fa-facebook"></i>
+              </a>
+              <a href="https://instagram.com/briteAtom" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-green-400 hover:bg-green-400 hover:text-gray-900 transition">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <a href="https://t.me/blueboybrite" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-green-400 hover:bg-green-400 hover:text-gray-900 transition">
+                <i class="fab fa-telegram"></i>
+              </a>
+              <!-- WhatsApp Icon (Contact Section) -->
+              <a href="https://wa.me/263776683769" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-green-400 hover:bg-green-400 hover:text-gray-900 transition">
+                <i class="fab fa-whatsapp"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-800 p-8 rounded-xl shadow-lg">
+          <h4 class="text-xl font-semibold mb-6 text-green-400">Send a Message</h4>
+          <form id="contact-form">
+            <div class="mb-4">
+              <label for="name" class="block mb-2">Name</label>
+              <input type="text" id="name" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            
+            <div class="mb-4">
+              <label for="email" class="block mb-2">Email</label>
+              <input type="email" id="email" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            
+            <div class="mb-4">
+              <label for="message" class="block mb-2">Message</label>
+              <textarea id="message" rows="4" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+            </div>
+            
+            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg transition flex items-center justify-center">
+              <i class="fas fa-paper-plane mr-2"></i>Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-900 border-t border-gray-800 text-center p-8 text-gray-500 text-sm">
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-6">
+        <a href="#" class="text-2xl font-bold flex items-center justify-center">
+          <i class="fas fa-atom text-green-400 mr-2"></i>briteAtom
+        </a>
+      </div>
+      
+      <div class="mb-6">
+        <p class="max-w-2xl mx-auto">Turning innovative ideas into practical solutions through electronics engineering, automation, and creative coding.</p>
+      </div>
+      
+      <div class="flex justify-center space-x-6 mb-6">
+        <a href="https://github.com/Embeebrite" target="_blank" class="text-gray-500 hover:text-green-400 transition">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://twitter.com/briteAtom" target="_blank" class="text-gray-500 hover:text-green-400 transition">
+          <i class="fab fa-twitter"></i>
+        </a>
+        <a href="https://www.facebook.com/briteAtom" target="_blank" class="text-gray-500 hover:text-green-400 transition">
+          <i class="fab fa-facebook"></i>
+        </a>
+        <a href="https://instagram.com/briteAtom" target="_blank" class="text-gray-500 hover:text-green-400 transition">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://t.me/blueboybrite" target="_blank" class="text-gray-500 hover:text-green-400 transition">
+          <i class="fab fa-telegram"></i>
+        </a>
+        <a href="https://wa.me/263776683769" target="_blank" class="text-gray-500 hover:text-green-400 transition">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </div>
+      
+      <div class="border-t border-gray-800 pt-6">
+        © 2025 briteAtom. Made with <i class="fas fa-heart text-green-400 mx-1"></i> in Zimbabwe
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile Menu Toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        mobileMenu.classList.add('hidden');
+        
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // About slider functionality
+    const slides = document.querySelectorAll(".slide");
+    const slider = document.getElementById("aboutSlider");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const dots = document.querySelectorAll(".dot");
+    
+    let currentSlide = 0;
+    let interval;
+    const colors = ["from-indigo-900", "from-purple-900", "from-pink-900", "from-blue-900", "from-green-900"];
+    
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.add("hidden");
+        slide.classList.remove("fade-in");
+        if (i === index) {
+          slide.classList.remove("hidden");
+          slide.classList.add("fade-in");
+        }
+      });
+      
+      // Update dots
+      dots.forEach(dot => dot.classList.remove("active"));
+      if (dots[index]) {
+        dots[index].classList.add("active");
+        dots[index].style.opacity = "1";
+        dots[index].style.transform = "scale(1.4)";
+      }
+       
+      // Update background gradient
+      slider.classList.remove(...colors);
+      slider.classList.add(colors[index]);
+    }
+    
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }
+    
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(currentSlide);
+    }
+    
+    function startAutoSlide() {
+      interval = setInterval(nextSlide, 5000);
+    }
+    
+    function stopAutoSlide() {
+      clearInterval(interval);
+    }
+    
+    function resetTimer() {
+      stopAutoSlide();
+      startAutoSlide();
+    }
+    
+    nextBtn.addEventListener("click", () => {
+      nextSlide();
+      resetTimer();
+    });
+    
+    prevBtn.addEventListener("click", () => {
+      prevSlide();
+      resetTimer();
+    });
+    
+    // Add click events to dots
+    dots.forEach((dot, index) => {
+      dot.addEventListener("click", () => {
+        currentSlide = index;
+        showSlide(currentSlide);
+        resetTimer();
+      });
+    });
+    
+    slider.addEventListener("mouseover", stopAutoSlide);
+    slider.addEventListener("mouseout", startAutoSlide);
+    
+    // Initialize
+    showSlide(currentSlide);
+    startAutoSlide();
+    
+    // Contact form submission
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Thank you for your message! I will get back to you soon.');
+        contactForm.reset();
+      });
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      scroll-behavior: smooth;
+    }
+    
+    .font-poppins {
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .slide.fade-in {
+      opacity: 1;
+      z-index: 10;
+    }
+    
+    .dot.active {
+      background-color: #10B981;
+      opacity: 1 !important;
+      transform: scale(1.4);
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 1s ease-out forwards;
+      opacity: 0;
+    }
+    
+    .animate-fade-in-up {
+      animation: fadeInUp 1s ease-out forwards;
+      opacity: 0;
+      animation-delay: 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    #aboutSlider {
+      min-height: 250px;
+    }
+    
+    #contact-form input,
+    #contact-form textarea {
+      transition: all 0.3s ease;
+    }
+    
+    #contact-form input:focus,
+    #contact-form textarea:focus {
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+    }
+  </style>
+</body>
+</html>
