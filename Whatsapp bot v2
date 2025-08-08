@@ -1,0 +1,555 @@
+require('dotenv').config();
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+const fs = require('fs');
+const cron = require('node-cron');
+const { v4: uuidv4 } = require('uuid');
+const Sentiment = require('sentiment');
+
+const client = new Client({
+  authStrategy: new LocalAuth(),
+  puppeteer: {
+    headless: true,
+    args: [] 
+  }
+});
+
+// Enhanced configuration
+const ADMIN_NUMBER = '263782040755@c.us';
+const EBOOKS = {
+  python: { title: "Python Mastery", price: 10, url: "http://briteatomtech.co.zw/python", stock: 15 },
+  free: { title: "Free Coding Guide", price: 0, url: "http://briteatomtech.co.zw/free-coding", stock: 999 }
+};
+
+// Expanded databases
+let db = {
+  users: {},
+  groups: {},
+  orders: {},
+  coupons: {
+    WELCOME10: { discount: 10, validUntil: '2024-12-31' }
+  },
+  settings: {},
+  stats: {}
+};
+
+// Initialize databases
+try {
+  const dbData = fs.readFileSync('db.json', 'utf8');
+  if (dbData) Object.assign(db, JSON.parse(dbData));
+} catch (e) {
+  fs.writeFileSync('db.json', JSON.stringify(db, null, 2));
+}
+
+// Enhanced features containers
+const groupFeatures = {
+  slowMode: {},
+  mutedGroups: {},
+  nightMode: {},
+  welcomeMessages: {},
+  autoRules: {},
+  roleSystem: {},
+  suggestionBox: {}
+};
+
+const forbiddenLinks = ['tiktok.com', 'invite.whatsapp.com'];
+const badWords = ['curseword1', 'curseword2'];
+const userStats = new Map();
+let lastMessageTimestamps = {};
+
+// ========================
+// ENHANCED INITIALIZATION
+// ========================
+client.on('qr', qr => qrcode.generate(qr, { small: true }));
+client.on('ready', () => {
+  console.log('✅ Bot Ready!');
+  initScheduledTasks();
+});
+client.on('disconnected', reason => {
+  console.log('❌ Disconnected:', reason);
+  backupDatabase();
+});
+client.on('auth_failure', msg => console.error('AUTH FAILURE:', msg));
+client.on('authenticated', () => console.log('✅ Authenticated'));
+
+// ======================
+// NEW EVENT HANDLERS
+// ======================
+client.on('group_join', async notification => {
+  const chatId = notification.chatId;
+  const group = db.groups[chatId] || {};
+  
+  if (group.welcomeEnabled) {
+    const user = notification.recipientIds[0];
+    const welcomeMsg = group.welcomeMessage 
+      ? group.welcomeMessage.replace('{user}', `@${user.split('@')[0]}`).replace('{group}', group.name || 'this group')
+      : `👋 Welcome @${user.split('@')[0]} to the group!`;
+      
+    await client.sendMessage(chatId, welcomeMsg, { mentions: [user] });
+    
+    if (group.autoRole) {
+      groupFeatures.roleSystem[user] = group.autoRole;
+      await client.sendMessage(chatId, `Assigned role: ${group.autoRole} to new member!`);
+    }
+  }
+  
+  if (group.rulesEnabled && group.rulesContent) {
+    await client.sendMessage(chatId, `📜 Group Rules:\n${group.rulesContent}`);
+  }
+});
+
+client.on('group_leave', async notification => {
+  const userId = notification.recipientIds[0];
+  delete groupFeatures.roleSystem[userId];
+});
+
+// ======================
+// MAIN MESSAGE HANDLER
+// ======================
+client.on('message', async msg => {
+  try {
+    if (!msg || msg.fromMe || !msg.body) return;
+
+    const chat = await msg.getChat();
+    const contact = await msg.getContact();
+    const userId = contact.id._serialized;
+    const chatId = chat.id._serialized;
+    
+    if (!db.users[userId]) {
+      db.users[userId] = {
+        id: userId,
+        name: contact.pushname,
+        xp: 0,
+        level: 1,
+        joined: new Date().toISOString(),
+        warnings: 0
+      };
+    }
+
+    logMessage(msg);
+
+    if (chat.isGroup && !db.groups[chatId]) {
+      db.groups[chatId] = {
+        id: chatId,
+        name: chat.name,
+        welcomeEnabled: false,
+        rulesEnabled: false
+      };
+    }
+
+    if (userId === ADMIN_NUMBER) {
+      await handleAdminCommands(msg, chat);
+    }
+
+    if (chat.isGroup) {
+      await handleGroupFeatures(msg, chat);
+    }
+
+    const sentimentScore = sentimentAnalysis(msg.body);
+    if (sentimentScore < -3) {
+      await handleToxicMessage(msg, sentimentScore, userId);
+    }
+
+    await handleCommandSystem(msg);
+    updateUser XP(userId, 1);
+  } catch (error) {
+    console.error('Message Handling Error:', error);
+  }
+});
+
+// ======================
+// GROUP FEATURE HANDLER
+// ======================
+async function handleGroupFeatures(msg, chat) {
+  const chatId = chat.id._serialized;
+  const body = msg.body.toLowerCase();
+  
+  if (groupFeatures.mutedGroups[chatId]) {
+    const isAdmin = chat.participants.find(p => p.id._serialized === msg.author).isAdmin;
+    if (!isAdmin) {
+      await msg.delete(true);
+      return;
+    }
+  }
+  
+  if (forbiddenLinks.some(link => body.includes(link))) {
+    const isAdmin = chat.participants.find(p => p.id._serialized === msg.author).isAdmin;
+    if (!isAdmin) {
+      await msg.delete(true);
+      await client.sendMessage(chatId, `⚠️ ${contact.pushname}, this link is not allowed!`);
+    }
+  }
+  
+  if (badWords.some(word => body.includes(word))) {
+    await msg.delete(true);
+    await client.sendMessage(chatId, `⚠️ ${contact.pushname}, please keep the conversation respectful!`);
+  }
+  
+  if (groupFeatures.slowMode[chatId]) {
+    const now = Date.now();
+    const lastTimestamp = lastMessageTimestamps[msg.author] || 0;
+    const slowModeInterval = groupFeatures.slowMode[chatId].interval;
+    
+    if (now - lastTimestamp < slowModeInterval) {
+      await msg.delete(true);
+      return;
+    }
+    lastMessageTimestamps[msg.author] = now;
+  }
+}
+
+// ======================
+// COMMAND HANDLER SYSTEM
+// ======================
+async function handleCommandSystem(msg) {
+  if (!msg.body.startsWith('!')) return;
+  
+  const body = msg.body.toLowerCase();
+  const chat = await msg.getChat();
+  const contact = await msg.getContact();
+  const userId = contact.id._serialized;
+  
+  const args = body.slice(1).split(' ');
+  const command = args[0];
+  
+  switch(command) {
+    case 'suggest':
+      await handleSuggestion(msg);
+      break;
+    case 'order':
+      await handleOrderCommand(msg);
+      break;
+    case 'menu':
+      await handleMenuCommand(msg);
+      break;
+    case 'quiz':
+      await handleQuizCommand(msg);
+      break;
+    case 'ebooks':
+      await handleEbooksCommand(msg);
+      break;
+    case 'buy':
+      await handleBuyCommand(msg);
+      break;
+    // Add more commands here
+  }
+}
+
+// ======================
+// IMPLEMENTED FEATURES
+// ======================
+
+// FEATURE: Sentiment Analysis Auto-Mod
+async function handleToxicMessage(msg, score, userId) {
+  await msg.reply(`⚠️ Warning: Your message was flagged as negative (score: ${score}). Please maintain positive discussions.`);
+  
+  if (db.users[userId]) {
+    db.users[userId].warnings++;
+    
+    if (db.users[userId].warnings > 3) {
+      const chat = await msg.getChat();
+      if (chat.isGroup) {
+        await chat.removeParticipants([userId]);
+        await msg.reply('🚫 User banned due to multiple violations');
+      }
+    }
+  }
+}
+
+function sentimentAnalysis(text) {
+  const analyzer = new Sentiment();
+  return analyzer.analyze(text).score;
+}
+
+// FEATURE: XP & Leveling System
+function updateUser XP(userId, points) {
+  const user = db.users[userId];
+  if (!user) return;
+  
+  user.xp += points;
+  
+  const nextLevel = user.level * 100;
+  if (user.xp >= nextLevel) {
+    user.level++;
+    client.sendMessage(userId, `🎉 Level up! You're now level ${user.level}`);
+  }
+}
+
+// FEATURE: Enhanced Admin Commands
+async function handleAdminCommands(msg, chat) {
+  const body = msg.body.toLowerCase();
+  const chatId = chat.id._serialized;
+
+  if (body === '!lock') {
+    groupFeatures.mutedGroups[chatId] = true;
+    await msg.reply('🔒 Group locked! Only admins can speak.');
+  }
+  
+  if (body === '!unlock') {
+    groupFeatures.mutedGroups[chatId] = false;
+    await msg.reply('🔓 Group unlocked! Everyone can speak.');
+  }
+
+  if (body === '!nightmode on') {
+    groupFeatures.nightMode[chatId] = true;
+    await msg.reply('🌙 Night mode enabled. Group muted until morning.');
+  }
+  
+  if (body === '!nightmode off') {
+    groupFeatures.nightMode[chatId] = false;
+    await msg.reply('☀️ Night mode disabled. Group active.');
+  }
+
+  if (body.startsWith('!tempban')) {
+    const parts = body.split(' ');
+    if (parts.length < 3) {
+      return await msg.reply('Usage: !tempban @user minutes');
+    }
+    
+    const mentions = await msg.getMentions();
+    if (mentions.length === 0) return;
+    
+    const duration = parseInt(parts[2]);
+    if (isNaN(duration)) return;
+    
+    const userToBan = mentions[0].id._serialized;
+    await chat.removeParticipants([userToBan]);
+    
+    setTimeout(async () => {
+      try {
+        await chat.addParticipants([userToBan]);
+      } catch (e) {
+        console.error('Failed to unban:', e);
+      }
+    }, duration * 60000);
+    
+    await msg.reply(`⏳ Temporarily banned user for ${duration} minutes`);
+  }
+}
+
+// FEATURE: Anonymous Suggestion Box
+async function handleSuggestion(msg) {
+  const suggestion = msg.body.replace('!suggest', '').trim();
+  if (!suggestion) return;
+  
+  const suggestionId = uuidv4().substr(0, 8);
+  
+  db.suggestions = db.suggestions || {};
+  db.suggestions[suggestionId] = {
+    text: suggestion,
+    date: new Date().toISOString(),
+    from: msg.from
+  };
+  
+  await client.sendMessage(
+    ADMIN_NUMBER, 
+    `📩 New Suggestion (${suggestionId}):\n${suggestion}`
+  );
+  
+  await msg.reply('✅ Your suggestion was anonymously forwarded to admin!');
+}
+
+// FEATURE: E-commerce System
+async function handleOrderCommand(msg) {
+  const args = msg.body.split(' ');
+  if (args.length < 2) {
+    return await msg.reply('Usage: !order product [coupon]');
+  }
+  
+  const product = args[1].toLowerCase();
+  const coupon = args[2];
+  
+  if (!EBOOKS[product]) {
+    return await msg.reply('❌ Invalid product. Use !ebooks to see options.');
+  }
+  
+  const orderId = `ORD-${Date.now().toString(36).toUpperCase()}`;
+  const price = applyCoupon(EBOOKS[product].price, coupon);
+  
+  db.orders[orderId] = {
+    product,
+    price,
+    status: 'pending',
+    user: msg.from,
+    date: new Date().toISOString()
+  };
+  
+  await msg.reply(
+    `🛒 Order Created: ${orderId}\n` +
+    `📦 Product: ${EBOOKS[product].title}\n` +
+    `💵 Amount: $${price}\n` +
+    `🚚 Status: Pending payment\n\n` +
+    `💳 Pay to: EcoCash 0776683769\n` +
+    `📸 Reply with payment screenshot to complete`
+  );
+}
+
+function applyCoupon(price, coupon) {
+  if (coupon && db.coupons[coupon]) {
+    const discount = db.coupons[coupon].discount;
+    return price * (1 - discount/100);
+  }
+  return price;
+}
+
+// FEATURE: Ebooks Command
+async function handleEbooksCommand(msg) {
+  const list = Object.entries(EBOOKS).map(
+    ([key, book]) => `- *${key.toUpperCase()}*: ${book.title} (${book.price ? '$' + book.price : 'FREE'})`
+  ).join('\n');
+  
+  await msg.reply('📚 *Available eBooks:*\n' + list);
+}
+
+// FEATURE: Buy Command
+async function handleBuyCommand(msg) {
+  const args = msg.body.split(' ');
+  if (args.length < 2) {
+    return await msg.reply('Usage: !buy ebook-name');
+  }
+  
+  const key = args[1].toLowerCase();
+  const book = EBOOKS[key];
+  if (!book) {
+    return await msg.reply('❌ Invalid ebook name. Use !ebooks to see options.');
+  }
+  
+  await msg.reply(
+    `💳 To buy *${book.title}*:\n` +
+    `1. Send $${book.price} to EcoCash 0776683769\n` +
+    `2. Reply with a payment screenshot\n` +
+    `3. You'll receive the ebook within 24 hours\n` +
+    `🔗 ${book.url}`
+  );
+}
+
+// FEATURE: Gamification System
+async function handleQuizCommand(msg) {
+  const questions = [
+    {
+      q: "What does API stand for?",
+      options: ["Application Programming Interface", "Apple Pie Interface", "Advanced Programming Instruction"],
+      answer: 0
+    }
+  ];
+  
+  const currentQuestion = questions[0];
+  let questionText = "❓ Quiz Time!\n" + currentQuestion.q;
+  currentQuestion.options.forEach((opt, idx) => {
+    questionText += `\n${idx+1}. ${opt}`;
+  });
+  
+  await msg.reply(questionText);
+  
+  db.activeQuizzes = db.activeQuizzes || {};
+  db.activeQuizzes[msg.from] = {
+    question: 0,
+    startTime: Date.now()
+  };
+}
+
+// FEATURE: Scheduled Messages
+function initScheduledTasks() {
+  cron.schedule('0 7 * * *', async () => {
+    for (const chatId in db.groups) {
+      if (db.groups[chatId].dailyMessage) {
+        try {
+          await client.sendMessage(chatId, '📖 Daily Inspiration: Start your day with purpose!');
+        } catch (e) {
+          console.error('Failed to send daily message:', e);
+        }
+      }
+    }
+  });
+
+  cron.schedule('0 9 * * 1', () => {
+    generateWeeklyReport();
+  });
+}
+
+async function generateWeeklyReport() {
+  let report = `📊 Weekly Report\n\n`;
+  report += `👥 Total Users: ${Object.keys(db.users).length}\n`;
+  report += `🛒 Total Orders: ${Object.keys(db.orders || {}).length}\n`;
+  report += `💸 Total Revenue: $${calculateTotalRevenue()}\n\n`;
+  report += `🚀 Top Users:\n`;
+  
+  const topUsers = Object.values(db.users)
+    .sort((a, b) => b.xp - a.xp)
+    .slice(0, 5);
+    
+  topUsers.forEach((user, idx) => {
+    report += `${idx+1}. ${user.name} - Level ${user.level}\n`;
+  });
+  
+  await client.sendMessage(ADMIN_NUMBER, report);
+}
+
+function calculateTotalRevenue() {
+  if (!db.orders) return 0;
+  return Object.values(db.orders).reduce((total, order) => {
+    return total + (order.price || 0);
+  }, 0);
+}
+
+// FEATURE: Enhanced Auto-Reply with Menu
+async function handleMenuCommand(msg) {
+  try {
+    await client.sendMessage(msg.from, {
+      title: "BriteAtom Services",
+      sections: [
+        {
+          title: "Main Menu",
+          rows: [
+            { title: "📚 Browse eBooks", description: "View our collection", rowId: "!ebooks" },
+            { title: "🛒 My Orders", description: "Check order status", rowId: "!orders" },
+            { title: "💬 Support", description: "Talk to a human", rowId: "!support" }
+          ]
+        }
+      ]
+    }, { list: true });
+  } catch (e) {
+    await msg.reply(
+      "📋 Menu:\n\n" +
+      "1. Browse eBooks - Type !ebooks\n" +
+      "2. My Orders - Type !orders\n" +
+      "3. Support - Type !support\n"
+    );
+  }
+}
+
+// ======================
+// UTILITY FUNCTIONS
+// ======================
+function backupDatabase() {
+  fs.writeFile('db-backup.json', JSON.stringify(db, null, 2), err => {
+    if (err) console.error('Backup failed:', err);
+    else console.log('Database backed up');
+  });
+}
+
+function logMessage(msg) {
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    user: msg.from,
+    body: msg.body,
+    group: msg.from
+  };
+  
+  fs.appendFile('logs.jsonl', JSON.stringify(logEntry) + '\n', err => {
+    if (err) console.error('Log error:', err);
+  });
+}
+
+// Initialize client
+client.initialize();
+
+// Database persistence
+setInterval(() => {
+  try {
+    fs.writeFileSync('db.json', JSON.stringify(db, null, 2));
+    console.log('Database saved');
+  } catch (e) {
+    console.error('Database save error:', e);
+  }
+}, 300000); // Save every 5 minutes
