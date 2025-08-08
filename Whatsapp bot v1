@@ -1,0 +1,219 @@
+require('dotenv').config();
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+const fs = require('fs');
+const axios = require('axios');
+
+const client = new Client({
+  authStrategy: new LocalAuth(),
+  puppeteer: {
+    headless: true,
+    args: [] // No sandbox needed on Windows
+  }
+});
+
+const ADMIN_NUMBER = '263782040755@c.us';
+const EBOOKS = {
+  python: { title: "Python Mastery", price: 10, url: "http://briteatomtech.co.zw/python" },
+  free: { title: "Free Coding Guide", price: 0, url: "http://briteatomtech.co.zw/free-coding" }
+};
+
+let slowMode = {};
+let mutedGroups = {};
+const forbiddenLinks = ['tiktok.com', 'invite.whatsapp.com'];
+const badWords = ['curseword1', 'curseword2'];
+const userStats = new Map();
+
+client.on('qr', qr => qrcode.generate(qr, { small: true }));
+client.on('ready', () => console.log('✅ Bot Ready!'));
+client.on('disconnected', reason => console.log('❌ Disconnected:', reason));
+client.on('auth_failure', msg => console.error('AUTH FAILURE:', msg));
+client.on('authenticated', () => console.log('✅ Authenticated'));
+
+client.on('message', async msg => {
+  try {
+    if (!msg || msg.fromMe || !msg.body) return;
+
+    const chat = await msg.getChat();
+    const contact = await msg.getContact();
+
+    logMessage(msg);
+
+    if (contact.id._serialized === ADMIN_NUMBER) {
+      await handleAdminCommands(msg, chat);
+    }
+
+    if (chat.isGroup) {
+      await handleGroupFeatures(msg, chat);
+    }
+
+    await handleAutoReply(msg);
+    await handleEbookCommands(msg);
+
+    if (msg.body.startsWith('? ')) {
+      await handleAIQuery(msg);
+    }
+  } catch (error) {
+    console.error('Message Handling Error:', error);
+  }
+});
+
+async function handleAdminCommands(msg, chat) {
+  const body = msg.body.toLowerCase();
+
+  if (body.startsWith('!slow ')) {
+    const time = parseInt(body.split(' ')[1]);
+    if (!isNaN(time) && time > 0) {
+      slowMode[chat.id._serialized] = time;
+      await msg.reply(`🕒 Slow mode set to ${time} seconds.`);
+    }
+  }
+
+  if (body.startsWith('!ban ')) {
+    const mentions = await msg.getMentions();
+    if (mentions.length === 0) {
+      await msg.reply('❌ Please mention a user to ban.');
+      return;
+    }
+
+    for (const user of mentions) {
+      try {
+        await chat.removeParticipants([user.id._serialized]);
+        await msg.reply(`🚫 Banned ${user.id.user}`);
+      } catch (banError) {
+        console.error('Ban failed:', banError);
+      }
+    }
+  }
+
+  if (body === '!mute') {
+    mutedGroups[chat.id._serialized] = true;
+    await msg.reply('🔇 Group muted. Only admins can talk.');
+  }
+
+  if (body === '!unmute') {
+    delete mutedGroups[chat.id._serialized];
+    await msg.reply('🔊 Group unmuted. Everyone can talk.');
+  }
+}
+
+async function handleGroupFeatures(msg, chat) {
+  // Mute check
+  if (mutedGroups[chat.id._serialized]) {
+    const participant = chat.participants.find(p => p.id._serialized === msg.author);
+    if (!participant?.isAdmin) {
+      await msg.delete(true);
+      return;
+    }
+  }
+
+  // Forbidden content
+  if (containsForbidden(msg.body)) {
+    await msg.delete(true);
+    await msg.reply('⚠️ Link or word not allowed!');
+    return;
+  }
+
+  // Slow mode enforcement
+  const slow = slowMode[chat.id._serialized];
+  if (slow) {
+    if (!userStats.has(msg.author)) {
+      userStats.set(msg.author, { lastMessage: 0 });
+    }
+
+    const lastTime = userStats.get(msg.author).lastMessage;
+    const now = Date.now();
+
+    if (now - lastTime < slow * 1000) {
+      await msg.delete(true);
+      return;
+    }
+
+    userStats.set(msg.author, { lastMessage: now });
+  }
+}
+
+async function handleAutoReply(msg) {
+  const responses = {
+    'hi': 'Hello! How can I help you today?',
+    'hello': 'Hello! How can I help you today?',
+    'help': '📚 Commands:\n' +
+            '!ebooks - Show eBooks\n' +
+            '!buy <ebook> - Buy eBook\n' +
+            '? <question> - Ask AI\n' +
+            'Admin: !slow, !ban, !mute, !unmute',
+    'ebook': 'Use !ebooks to view all available options.'
+  };
+
+  const clean = msg.body.toLowerCase().trim();
+  const reply = responses[clean];
+  if (reply) await msg.reply(reply);
+}
+
+async function handleEbookCommands(msg) {
+  const body = msg.body.toLowerCase();
+
+  if (body.startsWith('!ebooks')) {
+    const cat = body.split(' ')[1];
+    if (cat && EBOOKS[cat]) {
+      const book = EBOOKS[cat];
+      await msg.reply(
+        `📘 *${book.title}*\n` +
+        `💵 Price: ${book.price ? '$' + book.price : 'FREE'}\n` +
+        `🔗 ${book.url}`
+      );
+    } else {
+      const list = Object.entries(EBOOKS).map(
+        ([key, book]) => `- *${key.toUpperCase()}*: ${book.title} (${book.price ? '$' + book.price : 'FREE'})`
+      ).join('\n');
+      await msg.reply('📚 Available eBooks:\n' + list);
+    }
+  }
+
+  if (body.startsWith('!buy ')) {
+    const cat = body.split(' ')[1];
+    if (EBOOKS[cat]) {
+      const book = EBOOKS[cat];
+      await msg.reply(
+        `💳 To buy *${book.title}*:\n` +
+        `1. Send $${book.price} to EcoCash 0776683769\n` +
+        `2. Reply with a payment screenshot\n` +
+        `3. eBook will be delivered within 24 hours`
+      );
+    } else {
+      await msg.reply('❌ Invalid ebook category. Use !ebooks to see options.');
+    }
+  }
+}
+
+async function handleAIQuery(msg) {
+  const question = msg.body.slice(2).trim();
+  if (!question) return;
+
+  try {
+    const res = await axios.post('https://api.deepai.org/api/text-generator', {
+      text: question
+    }, {
+      headers: { 'Api-Key': process.env.DEEPAI_API_KEY }
+    });
+
+    await msg.reply(res.data.output || '🤖 AI could not generate a response.');
+  } catch (e) {
+    console.error('AI Error:', e);
+    await msg.reply('⚠️ AI service is currently unavailable.');
+  }
+}
+
+function containsForbidden(text) {
+  const lower = text.toLowerCase();
+  return [...forbiddenLinks, ...badWords].some(word => lower.includes(word));
+}
+
+function logMessage(msg) {
+  const line = `${new Date().toISOString()} - ${msg.from}: ${msg.body}\n`;
+  fs.appendFile('logs.txt', line, err => {
+    if (err) console.error('Log error:', err);
+  });
+}
+
+client.initialize();
